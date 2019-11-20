@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/doc.min.css">
+    <style>
+        .tree li {
+            list-style-type: none;
+            cursor:pointer;
+        }
+        body{
+            background-image: url("/image/123.jpg");
+        }
+    </style>
+</head>
+
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="panel-heading">表单数据<div style="float:right;cursor:pointer;" data-toggle="modal" data-target="#myModal"><i class="glyphicon glyphicon-question-sign"></i></div></div>
+        <div class="panel-body">
+                <input type="hidden" th:value="${session.p.type}" id="typeid">
+                <div>
+                    <label>商品名称</label>
+                    <input type="text" class="form-control" id="productname" th:value="${session.p.productname}" >
+                </div>
+                <div>
+                    <label>售价</label>
+                    <input type="text" class="form-control" id="price" th:value="${session.p.price}">
+                </div>
+                <div>
+                    <label>收货地区</label>
+                    <select class="form-control" id="regionid">
+                        <option th:value="${rg.id}" th:text="${rg.regionname}" th:each="rg:${session.rgs}"></option>
+                    </select>
+                </div>
+                <button id="shoppingBtn" type="button" class="btn btn-success"><i class="glyphicon glyphicon-edit"></i>确认购买</button>
+                <button type="button" onclick="window.location.href='/index'" class="btn btn-danger"><i class="glyphicon glyphicon-refresh"></i>取消购买</button>
+        </div>
+    </div>
+</div>
+
+<script src="/jquery/jquery-2.1.1.min.js"></script>
+<script src="/bootstrap/js/bootstrap.min.js"></script>
+<script src="/script/docs.min.js"></script>
+<script TYPE="text/javascript" src="/jquery/layer/layer.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $(".list-group-item").click(function(){
+            if ( $(this).find("ul") ) {
+                $(this).toggleClass("tree-closed");
+                if ( $(this).hasClass("tree-closed") ) {
+                    $("ul", this).hide("fast");
+                } else {
+                    $("ul", this).show("fast");
+                }
+            }
+        });
+    });
+    $("#shoppingBtn").click(function () {
+        var typeid = $("#typeid").val();
+        var regionid = $("#regionid").val();
+        $.ajax({
+            type:"post",
+            data:{
+                "typeid":typeid,
+                "regionid":regionid
+            },
+            url:"/doshopping",
+            beforeSend:function () {
+                return true;
+            },
+            success:function (result) {
+                if(result.success){
+                    window.location.href="/index";
+                    layer.msg(result.message,{time:1000,icon:1,shift:5});
+                }else {
+                    layer.msg(result.message,{time:2000,icon:6});
+                }
+            },
+            error:function () {
+                alert("数据不能为空");
+            }
+
+        });
+    });
+
+</script>
+</body>
+</html>
+

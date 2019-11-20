@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.binge.sx2.mapper.ProductMapper">
+
+
+    <!--
+        查询全部数据
+    -->
+    <select id="queryList" resultType="com.binge.sx2.beans.ShowProduct">
+        select p.id,p.productname,p.price,t.typename
+        from product as p,producttotype as t
+        where
+        <if test="querytype!=null">
+          t.typename like concat("%",#{querytype},"%") and
+        </if>
+          p.type=t.id
+         limit #{startIndex},#{pagesize}
+    </select>
+
+
+    <!--查询数据总量-->
+    <select id="querycount" resultType="int">
+      select count(p.id)
+      from product as p,producttotype as t
+      where
+        <if test="querytype!=null">
+            t.typename like concat("%",#{querytype},"%") and
+        </if>
+            p.type=t.id
+    </select>
+
+    <!--通过id查询数据-->
+    <select id="queryProductById" resultType="com.binge.sx2.beans.Product">
+    select id,productname,price,type from product
+     where id=#{id}
+    </select>
+
+
+    <select id="selectAll" resultType="com.binge.sx2.beans.ShowProduct">
+        select p.id,p.productname,p.price,t.typename from product p left join producttotype t on p.type=t.id order by p.id asc
+    </select>
+
+
+    <!--插入数据-->
+    <insert id="tosave">
+        insert into product (productname,price,type) values (#{productname}, #{price},#{type})
+    </insert>
+
+</mapper>
